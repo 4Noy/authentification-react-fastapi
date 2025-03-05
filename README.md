@@ -1,9 +1,7 @@
 # Authentification React FastAPI
 
 ## Setup
-
-### DB
-Create a `.env` as follows
+### Create .env file as follows
 ```
 POSTGRES_USER=postgres_user
 POSTGRES_PASSWORD=superPassword!
@@ -11,7 +9,23 @@ POSTGRES_DB=authentification_react_fastapi
 VITE_API_URL=http://backend:8000
 ```
 
-### Configuration
+### Add yourself as a user of the docker group
+```
+sudo usermod -aG docker $USER
+newgrp docker
+```
+
+### Make sure docker is running
+```
+sudo systemctl start docker
+```
+
+## Run
+```
+docker-compose up --build
+```
+
+## Contribute
 
 #### config login:
 ```bash

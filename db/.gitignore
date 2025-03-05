@@ -1,0 +1,4 @@
+### POSTGRES ###
+# Since init.sh is used, ignore every init in db directory
+init.*
+!init.sh
