@@ -1,41 +1,7 @@
-### REACT + YARN ###
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-build
-dist/
-typings/
-.npm
-.eslintcache
-.node_repl_history
-*.tgz
-.yarn-integrity
-
-### PYTHON ###
-__pycache__
-.coverage*
-.netlify
-log.txt
-Pipfile.lock
-env3.*
-env
-venv
+### Docker ###
+.env
 
 ### VIM ###
 *~
 .*.sw?
 .cache
-
-### SQLITE3 ###
-*.db
-*.exp
-*.pdb
-*.a
-*.so
-*.db-shm
-*.db-wal
-package-lock.json
-*.sqlite

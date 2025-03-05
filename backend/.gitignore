@@ -1,0 +1,9 @@
+### PYTHON ###
+__pycache__
+.coverage*
+.netlify
+log.txt
+Pipfile.lock
+env3.*
+env
+venv
