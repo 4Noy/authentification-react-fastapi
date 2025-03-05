@@ -1,0 +1,37 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: \/(err|in|out|txt)$
+      - id: end-of-file-fixer
+        exclude: (\.(err|in|out|txt)$|\.apps/)
+  - repo: local
+    hooks:
+      - id: clang-format
+        name: clang-format
+        entry: clang-format
+        language: system
+        args: [--Werror]
+        files: \.(tsx)$
+  - repo: local
+    hooks:
+      - id: commit-msg
+        name: conventional commit messages
+        entry: |
+          bash -c '
+          COMMIT_MSG_FILE=".git/COMMIT_EDITMSG"
+          if [ ! -f "$COMMIT_MSG_FILE" ]; then
+            echo "Error: Commit message file does not exist."
+            exit 1
+          fi
+          COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+          if ! echo "$COMMIT_MSG" | grep -qE "^(build|chore|ci|docs|feat|fix|perf|refactor|style|test)(\(.+\))?: .+$"; then
+            echo "Invalid commit message. Ensure it follows Conventional Commits."
+            exit 1
+          fi
+          echo "Commit message is valid."
+          '
+        language: system
+        stages:
+          - commit-msg
