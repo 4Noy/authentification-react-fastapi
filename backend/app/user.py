@@ -22,4 +22,5 @@ class UserAPIModel(BaseModel):
         str_anystr_length = 1
         str_anystr_length = 32
 
+
 Base.metadata.create_all(bind=engine)
