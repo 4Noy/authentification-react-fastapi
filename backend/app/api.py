@@ -16,7 +16,8 @@ async def read_root():
 @app.get("/users")
 async def get_users(db: Session = Depends(get_db)):
     return {"users":
-            [user_login[0] for user_login in db.query(UserDBModel.login).all()]}
+            [user_login[0] for user_login in
+             db.query(UserDBModel.login).all()]}
 
 
 @app.post("/create_user")
