@@ -5,3 +5,6 @@
 *~
 .*.sw?
 .cache
+
+### IDEA ###
+.idea
