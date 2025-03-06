@@ -7,6 +7,7 @@ POSTGRES_USER=postgres_user
 POSTGRES_PASSWORD=superPassword!
 POSTGRES_DB=authentification_react_fastapi
 VITE_API_URL=http://backend:8000
+SECRET_KEY=tbXh9MI9lvH8dz99FNKO
 ```
 
 ### Add yourself as a user of the docker group

@@ -10,6 +10,7 @@ class UserDBModel(Base):
     id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
     login = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
+    token = Column(String, nullable=False)
 
 
 class UserAPIModel(BaseModel):

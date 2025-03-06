@@ -1,10 +1,31 @@
+import os
+from datetime import datetime, timedelta
 from fastapi import FastAPI, HTTPException, Depends
+from fastapi.security import OAuth2PasswordBearer
+import jwt
 from sqlalchemy.orm import Session
 
 from app.user import UserDBModel, UserAPIModel
 from app.database import get_db
 
 app = FastAPI()
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+ACCESS_TOKEN_EXPIRE_TIME = 5  # in minutes
+SECRET_KEY = os.environ["SECRET_KEY"]
+ALGORITHM = "HS256"
+
+
+async def is_token_valid(token: str) -> bool:
+    return True
+
+
+async def generate_token(login: str, password: str) -> str:
+    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_TIME)
+    to_encode = {"login": login, "password": password, "expire": expire}
+    encoded = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded
 
 
 @app.get("/")
@@ -37,7 +58,6 @@ async def create_user(newuser: UserAPIModel,
 
 @app.post("/connect")
 async def connect(user: UserAPIModel,
-                  token: str,
                   db: Session = Depends(get_db)) -> dict:
     connecteduser: UserDBModel or None = db.query(UserDBModel)\
             .where(UserDBModel.login == user.login).first()
@@ -45,4 +65,25 @@ async def connect(user: UserAPIModel,
         raise HTTPException(status_code=404, detail="User doesn't exist")
     if (connecteduser.password != user.password):
         raise HTTPException(status_code=401, detail="Wrong Password !")
-    return {"message": "Connected"}
+    token = generate_token(user.login, user.password)
+    try:
+        connecteduser.token = token
+        db.commit()
+    except Exception:
+        raise HTTPException(status_code=500, detail="Couln't connect")
+
+    return {"message": "Connected", "token": token}
+
+
+@app.post("/verify_token")
+async def verify_token(user_login: str,
+                       token: str,
+                       db: Session = Depends(get_db)) -> dict:
+    connecteduser: UserDBModel or None = db.query(UserDBModel)\
+            .where(UserDBModel.login == user_login).first()
+    if (connecteduser is None):
+        raise HTTPException(status_code=404, detail="User doesn't exist")
+    if (connecteduser.token == token and is_token_valid(token)):
+        return {"message": "Token Verified"}
+    else:
+        raise HTTPException(status_code=401, detail="Invalid Token")
