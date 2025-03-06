@@ -18,14 +18,23 @@ ALGORITHM = "HS256"
 
 
 async def is_token_valid(token: str) -> bool:
-    return True
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        if datetime.utcnow() > datetime.fromtimestamp(payload["expire"]):
+            return False
+        return True
+    except jwt.ExpiredSignatureError:
+        return False
+    except jwt.InvalidTokenError:
+        return False
 
 
 async def generate_token(login: str, password: str) -> str:
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_TIME)
-    to_encode = {"login": login, "password": password, "expire": expire}
-    encoded = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded
+    to_encode = {"login": login,
+                 "password": password,
+                 "expire": expire.timestamp()}
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
 @app.get("/")
@@ -65,12 +74,12 @@ async def connect(user: UserAPIModel,
         raise HTTPException(status_code=404, detail="User doesn't exist")
     if (connecteduser.password != user.password):
         raise HTTPException(status_code=401, detail="Wrong Password !")
-    token = generate_token(user.login, user.password)
+    token = await generate_token(user.login, user.password)
     try:
         connecteduser.token = token
         db.commit()
     except Exception:
-        raise HTTPException(status_code=500, detail="Couln't connect")
+        raise HTTPException(status_code=500, detail="Couldn't connect")
 
     return {"message": "Connected", "token": token}
 
