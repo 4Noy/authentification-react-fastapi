@@ -9,7 +9,7 @@ function Login() {
                 - POST : /create_user
                     Content to send : {"login": login, "password": hashed_password}
                 - POST : /connect
-                    Content to send : {}
+                    Content to send : {"login": login, "password": hashed_password}
             */}
         </>
     );
