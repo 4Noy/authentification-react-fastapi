@@ -1,14 +1,19 @@
 services:
   frontend:
     build: ./frontend
-    command: ["yarn", "dev", "--host"]
+    command: ["yarn", "dev", "--host", "0.0.0.0"]
     ports:
       - 5173:5173
     env_file:
       - .env
+    depends_on:
+      backend:
+        condition: service_started
     volumes:
       - ./frontend:/app
       - /app/node_modules
+    networks:
+      - app_network
 
   backend:
     build: ./backend
@@ -22,7 +27,11 @@ services:
     volumes:
       - ./backend:/app
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db/${POSTGRES_DB}
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}/${POSTGRES_DB}
+      # Last line has been modified by AI, from :
+      # - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db/${POSTGRES_DB}
+    networks:
+      - app_network
 
   db:
     image: postgres:15
@@ -30,7 +39,8 @@ services:
     env_file:
       - .env
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} -h localhost"]
+      # Last line has been modified by AI from : test: ["CMD-SHELL", "pg_isready"]
       interval: 2s
       timeout: 5s
       retries: 5
@@ -38,6 +48,10 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
       - ./db/init.sh:/docker-entrypoint-initdb.d/init.sh
+    networks:
+      - app_network
 
+networks:
+  app_network:
 volumes:
   pg_data:
