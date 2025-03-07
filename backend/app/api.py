@@ -1,40 +1,22 @@
-import os
-from datetime import datetime, timedelta
 from fastapi import FastAPI, HTTPException, Depends
-from fastapi.security import OAuth2PasswordBearer
-import jwt
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
-from app.user import UserDBModel, UserAPIModel
+from app.api_models import UserAPIModel
+from app.auth import is_token_valid, generate_token
+from app.models import UserDBModel
 from app.database import get_db
 
 app = FastAPI()
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-ACCESS_TOKEN_EXPIRE_TIME = 5  # in minutes
-SECRET_KEY = os.environ["SECRET_KEY"]
-ALGORITHM = "HS256"
-
-
-async def is_token_valid(token: str) -> bool:
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        if datetime.utcnow() > datetime.fromtimestamp(payload["expire"]):
-            return False
-        return True
-    except jwt.ExpiredSignatureError:
-        return False
-    except jwt.InvalidTokenError:
-        return False
-
-
-async def generate_token(login: str, password: str) -> str:
-    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_TIME)
-    to_encode = {"login": login,
-                 "password": password,
-                 "expire": expire.timestamp()}
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],  # Line edited by AI
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")
@@ -52,8 +34,7 @@ async def get_users(db: Session = Depends(get_db)) -> dict:
 @app.post("/create_user")
 async def create_user(newuser: UserAPIModel,
                       db: Session = Depends(get_db)) -> dict:
-    if (any(newuser.login == user_login
-            for user_login in db.query(UserDBModel.login))):
+    if (db.query(UserDBModel.login).filter(UserDBModel.login == newuser.login).first() != None):
         raise HTTPException(status_code=409, detail="User Already Exists")
 
     try:
