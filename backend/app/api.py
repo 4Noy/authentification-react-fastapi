@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
-from app.api_models import UserAPIModel
+from app.api_models import UserAPIModel, TokenVerificationAPIModel
 from app.auth import is_token_valid, generate_token
 from app.models import UserDBModel
 from app.database import get_db
@@ -66,9 +66,10 @@ async def connect(user: UserAPIModel,
 
 
 @app.post("/verify_token")
-async def verify_token(user_login: str,
-                       token: str,
+async def verify_token(tokenAndLogin: TokenVerificationAPIModel,
                        db: Session = Depends(get_db)) -> dict:
+    user_login = tokenAndLogin.login
+    token = tokenAndLogin.token
     connecteduser: UserDBModel or None = db.query(UserDBModel)\
             .where(UserDBModel.login == user_login).first()
     if (connecteduser is None):

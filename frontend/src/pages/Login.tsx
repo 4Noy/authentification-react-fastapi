@@ -23,6 +23,7 @@ function Login() {
 
             const data = await response.json();
             if (response.ok) {
+                localStorage.clear();
                 localStorage.setItem("token", data.token); // Line modified by AI
                 localStorage.setItem("login", login);
                 navigate("/");

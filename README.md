@@ -6,7 +6,10 @@
 POSTGRES_USER=postgres_user
 POSTGRES_PASSWORD=superPassword!
 POSTGRES_DB=authentification_react_fastapi
+
 SECRET_KEY=tbXh9MI9lvH8dz99FNKO
+VITE_API_URL=http://localhost:8000
+POSTGRES_HOST=db
 ```
 
 ### Add yourself as a user of the docker group
@@ -27,14 +30,9 @@ docker-compose up --build
 
 ## Contribute
 
-#### config login:
+#### config login && mail:
 ```bash
 git config --global user.name "xavier.login"
-```
-
-
-#### config email:
-```bash
 git config --global user.email "xavier.login@mail.fr"
 ```
 
