@@ -1,7 +1,7 @@
 # Authentification React FastAPI
 
 ## Setup
-### Create .env file as follows
+### Create ./.env file as follows
 ```
 POSTGRES_USER=postgres_user
 POSTGRES_PASSWORD=superPassword!
