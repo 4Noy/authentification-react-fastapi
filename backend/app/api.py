@@ -36,6 +36,9 @@ async def create_user(newuser: UserAPIModel,
                       db: Session = Depends(get_db)) -> dict:
     if (db.query(UserDBModel.login).filter(UserDBModel.login == newuser.login).first() != None):
         raise HTTPException(status_code=409, detail="User Already Exists")
+    #print(len(newuser.password))
+    #if (len(newuser.password) != 32):
+    #    raise HTTPException(status_code=400, detail="Password hash incorrect")
 
     try:
         newusermodel = UserDBModel(**newuser.dict())
@@ -74,7 +77,7 @@ async def verify_token(tokenAndLogin: TokenVerificationAPIModel,
             .where(UserDBModel.login == user_login).first()
     if (connecteduser is None):
         raise HTTPException(status_code=404, detail="User doesn't exist")
-    if (connecteduser.token == token and is_token_valid(token)):
+    if (connecteduser.token == token and await is_token_valid(token)):
         return {"message": "Token Verified"}
     else:
         raise HTTPException(status_code=401, detail="Invalid Token")
