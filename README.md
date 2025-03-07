@@ -42,6 +42,6 @@ pre-commit install && pre-commit install --hook-type commit-msg
 ```
 
 ## Utilisation IA Generative
-De l'IA generative a ete utilise sur ces points precis:
-- URL dynamique liee au reseau Docker (Non 100% fonctionnel)
-- Certaines lignes du frontend React specifiee dans le code source
+L'IA générative a été utilisée sur ces points précis :
+- URL dynamique liée au réseau Docker (non 100 % fonctionnelle)
+- Certaines lignes du frontend React spécifiées dans le code source
