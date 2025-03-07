@@ -11,6 +11,14 @@ ALGORITHM = "HS256"
 
 
 async def is_token_valid(token: str) -> bool:
+    """
+    Check the validity of a JWT token.
+
+    :param token: JSON Web Token (JWT) string to be validated.
+    :type token: str
+    :return: A boolean indicating whether the token is valid.
+    :rtype: bool
+    """
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         if datetime.utcnow() > datetime.fromtimestamp(payload["expire"]):
@@ -23,6 +31,17 @@ async def is_token_valid(token: str) -> bool:
 
 
 async def generate_token(login: str, password: str) -> str:
+    """
+    Generates a JWT token for user authentication.
+
+    :param login: Login of the user.
+    :type login: str
+    :param password: The password credential of the user.
+    :type password: str
+    :return: A JWT token string representing the encoded user credentials
+        and expiration timestamp.
+    :rtype: str
+    """
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_TIME)
     to_encode = {"login": login,
                  "password": password,
