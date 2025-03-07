@@ -27,6 +27,8 @@ sudo systemctl start docker
 ```
 docker-compose up --build
 ```
+Then visit `http://localhost:5173/` with a browser
+
 
 ## Contribute
 
